@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssm.dao.UserMapper">
+    <resultMap id="BaseResultMap" type="com.ssm.pojo.User">
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="pws" property="pws" jdbcType="VARCHAR" />
+    </resultMap>
+   <!--  <cache eviction="LRU" type="com.ssm.utils.MybatisRedisCache"/> -->
+    
+    <sql id="Base_Column_List">
+        id,name
+    </sql>
+     <select id="toLongin" resultType="com.ssm.pojo.User" parameterType="com.ssm.pojo.User">
+        select name,pws from redis
+        where name = #{name} and pws = #{pws}
+    </select>
+    
+    
+    <select id="findUsers" resultMap="BaseResultMap" parameterType="String">
+        select
+        <include refid="Base_Column_List" />
+        from redis
+        where id like #{keyWords}
+        or name like #{keyWords}
+        
+    </select>
+
+    <!-- 查询所有的user -->
+    <select id="selectAllUser" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from redis
+    </select>
+
+    <!-- 添加一个用户 -->
+    <insert id="insertUser" parameterType="com.ssm.pojo.User">
+        INSERT INTO
+        redis(name )VALUES
+        (#{name})
+    </insert>
+
+    <!-- 删除用户 -->
+    <delete id="deleteUser" parameterType="int">
+        DELETE FROM redis WHERE
+        id=#{id}
+    </delete>
+
+    <!-- 更新user信息 -->
+    <update id="editUser" parameterType="com.ssm.pojo.User">
+        UPDATE redis SET
+        name=#{name}
+    </update>
+</mapper>
